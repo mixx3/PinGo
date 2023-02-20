@@ -11,7 +11,7 @@ type Log struct {
 	Address        string
 	Name           string
 	ReceiverID     int
-	Receiver       Receiver
+	Receiver       Receiver `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Request struct {
@@ -20,7 +20,7 @@ type Request struct {
 	Body                   string
 	ExpectedResponseTimeMs int
 	ReceiverID             int
-	Receiver               Receiver
+	Receiver               Receiver `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Receiver struct {
