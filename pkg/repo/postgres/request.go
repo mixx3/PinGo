@@ -16,7 +16,7 @@ func NewRequestRepository(DbDSN string) *ReceiverPgRepository {
 	if err != nil {
 		return nil
 	}
-	err = db.AutoMigrate(&models.Log{})
+	err = db.AutoMigrate(&models.Request{})
 	if err != nil {
 		return nil
 	}
