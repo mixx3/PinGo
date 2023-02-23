@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	api "PinGo/pkg/api"
 	models "PinGo/pkg/repo"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,4 +21,20 @@ func NewRequestRepository(DbDSN string) *ReceiverPgRepository {
 		return nil
 	}
 	return &ReceiverPgRepository{db: db}
+}
+
+func (r *RequestPgRepository) Add(schema *api.RequestPostSchema) error {
+	return nil
+}
+
+func (r *RequestPgRepository) GetAll() ([]*api.RequestGetSchema, error) {
+	return nil, nil
+}
+
+func (r *RequestPgRepository) Get(id int) (*api.RequestGetSchema, error) {
+	return nil, nil
+}
+
+func (r *RequestPgRepository) Delete(id int) error {
+	return nil
 }

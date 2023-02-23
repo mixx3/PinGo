@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	api "PinGo/pkg/api"
 	models "PinGo/pkg/repo"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,4 +21,18 @@ func NewLogRepository(DbDSN string) *LogPgRepository {
 		return nil
 	}
 	return &LogPgRepository{db: db}
+}
+
+func (r *LogPgRepository) Add(schema *api.LogPostSchema) error {
+	return nil
+}
+func (r *LogPgRepository) GetAll() ([]*api.LogGetSchema, error) {
+	return nil, nil
+}
+func (r *LogPgRepository) Get(id int) (*api.LogGetSchema, error) {
+	return nil, nil
+}
+
+func (r *LogPgRepository) Delete(id int) error {
+	return nil
 }
