@@ -52,19 +52,11 @@ func (r *LogPgRepository) GetAll() ([]*api.LogGetSchema, error) {
 	return res, nil
 }
 func (r *LogPgRepository) Get(id int) (*api.LogGetSchema, error) {
-	log := models.Log{}
-	if err := r.db.Where("id = ?", id).First(&log); errors.Is(err.Error, gorm.ErrRecordNotFound) {
+	log := &api.LogGetSchema{}
+	if err := r.db.Model(&models.Log{}).Where("id = ?", id).Find(log); errors.Is(err.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("not found")
 	}
-	return &api.LogGetSchema{
-		ID:             id,
-		ReceiverID:     log.ReceiverID,
-		Name:           log.Name,
-		Address:        log.Address,
-		StatusCode:     log.StatusCode,
-		ResponseTimeMs: log.ResponseTimeMs,
-		DtCreated:      log.CreatedAt,
-	}, nil
+	return log, nil
 }
 
 func (r *LogPgRepository) Delete(id int) error {
