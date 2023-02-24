@@ -51,6 +51,7 @@ func (r *LogPgRepository) GetAll() ([]*api.LogGetSchema, error) {
 	}
 	return res, nil
 }
+
 func (r *LogPgRepository) Get(id int) (*api.LogGetSchema, error) {
 	log := &api.LogGetSchema{}
 	if err := r.db.Model(&models.Log{}).Where("id = ?", id).Find(log); errors.Is(err.Error, gorm.ErrRecordNotFound) {
