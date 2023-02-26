@@ -1,9 +1,13 @@
 package api
 
+type Observer interface {
+	Notify(schedulers []Scheduler, event RequestPostSchema) error
+}
+
 type Scheduler interface {
-	AddJob(schema ReceiverPostSchema)
+	AddJob(schema RequestPostSchema) error
 }
 
 type IO interface {
-	Update()
+	Update(schema RequestGetSchema) error
 }
