@@ -1,0 +1,91 @@
+definitions:
+  api.ReceiverPostSchema:
+    properties:
+      name:
+        type: string
+      social_id:
+        type: string
+    type: object
+  api.RequestPostSchema:
+    properties:
+      address:
+        type: string
+      body:
+        type: string
+      expected_response_time_ms:
+        type: integer
+      name:
+        type: string
+      receiver_id:
+        type: integer
+      repeat_time_ms:
+        type: integer
+      status_expected:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/log:
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all
+      tags:
+      - log
+  /v1/receiver:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: schema
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/api.ReceiverPostSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Post receiver
+      tags:
+      - receiver
+  /v1/request:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: schema
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/api.RequestPostSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Post request
+      tags:
+      - request
+  /v1/status:
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Status
+      tags:
+      - log
+swagger: "2.0"
