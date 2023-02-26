@@ -13,7 +13,7 @@ type LogPgRepository struct {
 
 func NewLogRepository(db *gorm.DB) *LogPgRepository {
 	err := db.AutoMigrate(&models.Log{})
-	if err.Error() != nil {
+	if err != nil {
 		return nil
 	}
 	return &LogPgRepository{db: db}
