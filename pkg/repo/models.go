@@ -21,6 +21,7 @@ type Request struct {
 	Address                string
 	Body                   string
 	ExpectedResponseTimeMs int
+	RepeatTimeMs           int
 	ReceiverID             int
 	Receiver               Receiver `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

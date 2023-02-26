@@ -4,7 +4,6 @@ import (
 	api "PinGo/pkg/api"
 	models "PinGo/pkg/repo"
 	"errors"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -12,12 +11,8 @@ type RequestPgRepository struct {
 	db *gorm.DB
 }
 
-func NewRequestRepository(DbDSN string) *RequestPgRepository {
-	db, err := gorm.Open(postgres.New(postgres.Config{DSN: DbDSN, PreferSimpleProtocol: true}), &gorm.Config{})
-	if err != nil {
-		return nil
-	}
-	err = db.AutoMigrate(&models.Request{})
+func NewRequestRepository(db *gorm.DB) *RequestPgRepository {
+	err := db.AutoMigrate(&models.Request{})
 	if err != nil {
 		return nil
 	}
@@ -28,6 +23,9 @@ func (r *RequestPgRepository) Add(schema *api.RequestPostSchema) error {
 	request := models.Request{
 		StatusExpected:         schema.StatusExpected,
 		Body:                   schema.Body,
+		Name:                   schema.Name,
+		Address:                schema.Address,
+		RepeatTimeMs:           schema.RepeatTimeMs,
 		ExpectedResponseTimeMs: schema.ExpectedResponseTimeMs,
 		ReceiverID:             schema.ReceiverID,
 	}

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"os"
 )
 
@@ -25,9 +27,13 @@ func run() error {
 	}
 	router := gin.Default()
 	router.Use(cors.Default())
-	repo := pg.NewLogRepository(os.Getenv("DB_DSN"))
+	db, err := gorm.Open(postgres.New(postgres.Config{DSN: os.Getenv("DB_DSN"), PreferSimpleProtocol: true}), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+	repo := pg.NewLogRepository(db)
 	logService := services.NewLogService(repo)
-	requestService := services.NewRequestService(pg.NewRequestRepository("DB_DSN"))
+	requestService := services.NewRequestService(pg.NewRequestRepository(db))
 	server := app.NewServer(router, logService, requestService)
 	err = server.Run()
 	if err != nil {

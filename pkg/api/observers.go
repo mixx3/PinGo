@@ -5,9 +5,9 @@ type Observer interface {
 }
 
 type Scheduler interface {
-	AddJob(schema RequestPostSchema) error
+	AddJob(schema *RequestPostSchema) error
 }
 
 type IO interface {
-	Update(schema RequestGetSchema) error
+	Update(schema *RequestGetSchema) error
 }
