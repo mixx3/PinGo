@@ -25,7 +25,7 @@ func (r *ReceiverPgRepository) Add(schema *api.ReceiverPostSchema) error {
 		SocialID: schema.SocialID,
 	}
 	err := r.db.Create(&receiver)
-	if err != nil {
+	if err.Error != nil {
 		return errors.New("db error")
 	}
 	return nil
@@ -44,6 +44,6 @@ func (r *ReceiverPgRepository) Get(id int) (*api.ReceiverGetSchema, error) {
 }
 
 func (r *ReceiverPgRepository) Delete(id int) error {
-	r.db.Delete(&models.Receiver{}, id)
-	return nil
+	err := r.db.Delete(&models.Receiver{}, id)
+	return err.Error
 }

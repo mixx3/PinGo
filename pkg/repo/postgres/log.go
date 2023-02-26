@@ -13,7 +13,7 @@ type LogPgRepository struct {
 
 func NewLogRepository(db *gorm.DB) *LogPgRepository {
 	err := db.AutoMigrate(&models.Log{})
-	if err != nil {
+	if err.Error() != nil {
 		return nil
 	}
 	return &LogPgRepository{db: db}
@@ -28,7 +28,7 @@ func (r *LogPgRepository) Add(schema *api.LogPostSchema) error {
 		ResponseTimeMs: schema.ResponseTimeMs,
 	}
 	err := r.db.Create(&log)
-	if err != nil {
+	if err.Error != nil {
 		return errors.New("db error")
 	}
 	return nil
@@ -56,6 +56,6 @@ func (r *LogPgRepository) Get(id int) (*api.LogGetSchema, error) {
 }
 
 func (r *LogPgRepository) Delete(id int) error {
-	r.db.Delete(&models.Log{}, id)
-	return nil
+	err := r.db.Delete(&models.Log{}, id)
+	return err.Error
 }

@@ -43,8 +43,11 @@ type ReceiverGetSchema struct {
 
 type RequestGetSchema struct {
 	ID                     int    `json:"id"`
+	Name                   string `json:"name"`
+	Address                string `json:"address"`
 	StatusExpected         []int  `json:"status_expected"`
 	Body                   string `json:"body"`
 	ExpectedResponseTimeMs int    `json:"expected_response_time_ms"`
+	RepeatTimeMs           int    `json:"repeat_time_ms"`
 	ReceiverID             int    `json:"receiver_id"`
 }

@@ -30,7 +30,7 @@ func (r *RequestPgRepository) Add(schema *api.RequestPostSchema) error {
 		ReceiverID:             schema.ReceiverID,
 	}
 	err := r.db.Create(&request)
-	if err != nil {
+	if err.Error != nil {
 		return errors.New("db error")
 	}
 	return nil
@@ -49,6 +49,6 @@ func (r *RequestPgRepository) Get(id int) (*api.RequestGetSchema, error) {
 }
 
 func (r *RequestPgRepository) Delete(id int) error {
-	r.db.Delete(&models.Request{}, id)
-	return nil
+	err := r.db.Delete(&models.Request{}, id)
+	return err.Error
 }

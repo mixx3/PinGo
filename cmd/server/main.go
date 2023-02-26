@@ -3,8 +3,8 @@ package main
 import (
 	api2 "PinGo/pkg/api"
 	"PinGo/pkg/app"
-	pg "PinGo/pkg/repo/postgres"
-	services "PinGo/pkg/service/postgres"
+	postgres2 "PinGo/pkg/repo/postgres"
+	postgres3 "PinGo/pkg/service/postgres"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -31,10 +31,10 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	repo := pg.NewLogRepository(db)
-	logService := services.NewLogService(repo)
-	requestService := services.NewRequestService(pg.NewRequestRepository(db))
-	receiverService := services.NewReceiverService(pg.NewReceiverRepository(db))
+	repo := postgres2.NewLogRepository(db)
+	logService := postgres3.NewLogService(repo)
+	requestService := postgres3.NewRequestService(postgres2.NewRequestRepository(db))
+	receiverService := postgres3.NewReceiverService(postgres2.NewReceiverRepository(db))
 	server := app.NewServer(router, logService, requestService, receiverService)
 	err = server.Run()
 	if err != nil {
