@@ -83,3 +83,41 @@ func (s *Server) PostRequest() gin.HandlerFunc {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// PostReceiver PinGo godoc
+// @Summary Post receiver
+// @Tags receiver
+// @Accept json
+// @Produce json
+// @Param log body api.ReceiverPostSchema true "schema"
+// @Success 200
+// @Router /v1/receiver [post]
+func (s *Server) PostReceiver() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Content-Type", "application/json")
+
+		var newReceiver api.ReceiverPostSchema
+		err := c.ShouldBindJSON(&newReceiver)
+
+		if err != nil {
+			log.Printf("handler error: %v", err)
+			c.JSON(http.StatusBadRequest, nil)
+			return
+		}
+
+		err = s.receiverService.Create(&newReceiver)
+
+		if err != nil {
+			log.Printf("service error: %v", err)
+			c.JSON(http.StatusInternalServerError, nil)
+			return
+		}
+
+		response := map[string]string{
+			"status": "success",
+			"data":   "new request created",
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}

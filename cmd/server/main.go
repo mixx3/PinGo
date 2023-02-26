@@ -34,7 +34,8 @@ func run() error {
 	repo := pg.NewLogRepository(db)
 	logService := services.NewLogService(repo)
 	requestService := services.NewRequestService(pg.NewRequestRepository(db))
-	server := app.NewServer(router, logService, requestService)
+	receiverService := services.NewReceiverService(pg.NewReceiverRepository(db))
+	server := app.NewServer(router, logService, requestService, receiverService)
 	err = server.Run()
 	if err != nil {
 		return err

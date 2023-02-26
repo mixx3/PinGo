@@ -17,6 +17,8 @@ func (s *Server) Routes() *gin.Engine {
 		log.GET("", s.GetAll())
 		request := v1.Group("/request")
 		request.POST("", s.PostRequest())
+		receiver := v1.Group("/receiver")
+		receiver.POST("", s.PostReceiver())
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return router

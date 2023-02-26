@@ -7,16 +7,23 @@ import (
 )
 
 type Server struct {
-	router         *gin.Engine
-	logService     api.LogService
-	requestService api.RequestService
+	router          *gin.Engine
+	logService      api.LogService
+	requestService  api.RequestService
+	receiverService api.ReceiverService
 }
 
-func NewServer(router *gin.Engine, logService api.LogService, requestService api.RequestService) *Server {
+func NewServer(
+	router *gin.Engine,
+	logService api.LogService,
+	requestService api.RequestService,
+	receiverService api.ReceiverService,
+) *Server {
 	return &Server{
-		router:         router,
-		logService:     logService,
-		requestService: requestService,
+		router:          router,
+		logService:      logService,
+		requestService:  requestService,
+		receiverService: receiverService,
 	}
 }
 
