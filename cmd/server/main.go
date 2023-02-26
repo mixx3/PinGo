@@ -27,7 +27,8 @@ func run() error {
 	router.Use(cors.Default())
 	repo := pg.NewLogRepository(os.Getenv("DB_DSN"))
 	logService := services.NewLogService(repo)
-	server := app.NewServer(router, logService)
+	requestService := services.NewRequestService(pg.NewRequestRepository("DB_DSN"))
+	server := app.NewServer(router, logService, requestService)
 	err = server.Run()
 	if err != nil {
 		return err

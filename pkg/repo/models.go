@@ -17,6 +17,8 @@ type Log struct {
 type Request struct {
 	gorm.Model
 	StatusExpected         []int
+	Name                   string
+	Address                string
 	Body                   string
 	ExpectedResponseTimeMs int
 	ReceiverID             int

@@ -12,7 +12,7 @@ type RequestPgRepository struct {
 	db *gorm.DB
 }
 
-func NewRequestRepository(DbDSN string) *ReceiverPgRepository {
+func NewRequestRepository(DbDSN string) *RequestPgRepository {
 	db, err := gorm.Open(postgres.New(postgres.Config{DSN: DbDSN, PreferSimpleProtocol: true}), &gorm.Config{})
 	if err != nil {
 		return nil
@@ -21,7 +21,7 @@ func NewRequestRepository(DbDSN string) *ReceiverPgRepository {
 	if err != nil {
 		return nil
 	}
-	return &ReceiverPgRepository{db: db}
+	return &RequestPgRepository{db: db}
 }
 
 func (r *RequestPgRepository) Add(schema *api.RequestPostSchema) error {
