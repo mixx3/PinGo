@@ -7,19 +7,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type ReceiverPgRepository struct {
+type receiverPgRepository struct {
 	db *gorm.DB
 }
 
-func NewReceiverRepository(db *gorm.DB) *ReceiverPgRepository {
+func NewReceiverRepository(db *gorm.DB) api.ReceiverRepository {
 	err := db.AutoMigrate(&models.Receiver{})
 	if err != nil {
 		return nil
 	}
-	return &ReceiverPgRepository{db: db}
+	return &receiverPgRepository{db: db}
 }
 
-func (r *ReceiverPgRepository) Add(schema *api.ReceiverPostSchema) error {
+func (r *receiverPgRepository) Add(schema *api.ReceiverPostSchema) error {
 	receiver := models.Receiver{
 		Name:     schema.Name,
 		SocialID: schema.SocialID,
@@ -31,11 +31,11 @@ func (r *ReceiverPgRepository) Add(schema *api.ReceiverPostSchema) error {
 	return nil
 }
 
-func (r *ReceiverPgRepository) GetAll() ([]*api.ReceiverGetSchema, error) {
+func (r *receiverPgRepository) GetAll() ([]*api.ReceiverGetSchema, error) {
 	return nil, nil
 }
 
-func (r *ReceiverPgRepository) Get(id int) (*api.ReceiverGetSchema, error) {
+func (r *receiverPgRepository) Get(id int) (*api.ReceiverGetSchema, error) {
 	receiver := &api.ReceiverGetSchema{}
 	if err := r.db.Model(&models.Receiver{}).Where("id = ?", id).Find(&receiver); errors.Is(err.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("not found")
@@ -43,7 +43,7 @@ func (r *ReceiverPgRepository) Get(id int) (*api.ReceiverGetSchema, error) {
 	return receiver, nil
 }
 
-func (r *ReceiverPgRepository) Delete(id int) error {
+func (r *receiverPgRepository) Delete(id int) error {
 	err := r.db.Delete(&models.Receiver{}, id)
 	return err.Error
 }
