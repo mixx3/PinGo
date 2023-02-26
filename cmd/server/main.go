@@ -31,6 +31,10 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		dbInstance, _ := db.DB()
+		_ = dbInstance.Close()
+	}()
 	repo := postgres2.NewLogRepository(db)
 	logService := postgres3.NewLogService(repo)
 	requestService := postgres3.NewRequestService(postgres2.NewRequestRepository(db))

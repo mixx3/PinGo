@@ -7,19 +7,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type RequestPgRepository struct {
+type requestPgRepository struct {
 	db *gorm.DB
 }
 
-func NewRequestRepository(db *gorm.DB) *RequestPgRepository {
+func NewRequestRepository(db *gorm.DB) api.RequestRepository {
 	err := db.AutoMigrate(&models.Request{})
 	if err != nil {
 		return nil
 	}
-	return &RequestPgRepository{db: db}
+	return &requestPgRepository{db: db}
 }
 
-func (r *RequestPgRepository) Add(schema *api.RequestPostSchema) error {
+func (r *requestPgRepository) Add(schema *api.RequestPostSchema) error {
 	request := models.Request{
 		StatusExpected:         schema.StatusExpected,
 		Body:                   schema.Body,
@@ -36,11 +36,11 @@ func (r *RequestPgRepository) Add(schema *api.RequestPostSchema) error {
 	return nil
 }
 
-func (r *RequestPgRepository) GetAll() ([]*api.RequestGetSchema, error) {
+func (r *requestPgRepository) GetAll() ([]*api.RequestGetSchema, error) {
 	return nil, nil
 }
 
-func (r *RequestPgRepository) Get(id int) (*api.RequestGetSchema, error) {
+func (r *requestPgRepository) Get(id int) (*api.RequestGetSchema, error) {
 	request := &api.RequestGetSchema{}
 	if err := r.db.Model(&models.Log{}).Where("id = ?", id).Find(request); errors.Is(err.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("not found")
@@ -48,7 +48,7 @@ func (r *RequestPgRepository) Get(id int) (*api.RequestGetSchema, error) {
 	return request, nil
 }
 
-func (r *RequestPgRepository) Delete(id int) error {
+func (r *requestPgRepository) Delete(id int) error {
 	err := r.db.Delete(&models.Request{}, id)
 	return err.Error
 }

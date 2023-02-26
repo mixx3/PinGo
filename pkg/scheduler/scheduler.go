@@ -6,12 +6,16 @@ import (
 	"github.com/jasonlvhit/gocron"
 )
 
-type Scheduler struct {
-	service   api.RequestService
-	scheduler gocron.Scheduler
+type scheduler struct {
+	service     api.RequestService
+	gcScheduler gocron.Scheduler
 }
 
-func (s *Scheduler) AddJob(schema *api.RequestPostSchema) error {
+func NewScheduler(service api.RequestService, gcScheduler gocron.Scheduler) api.Scheduler {
+	return &scheduler{service, gcScheduler}
+}
+
+func (s *scheduler) AddJob(schema *api.RequestPostSchema) error {
 	gs := gocron.NewScheduler()
 	err := gs.Every(uint64(schema.RepeatTimeMs)/10).Seconds().Do(task, schema)
 	return err
