@@ -44,6 +44,8 @@ func (s *scheduler) NewTask(tsk *api.RequestPostSchema) (uuid.UUID, error) {
 
 func (s *scheduler) Stop(id uuid.UUID) error {
 	err := s.tasks[id].Stop()
+	defer close(s.inChs[id])
+	defer close(s.outChs[id])
 	return err
 }
 
@@ -58,8 +60,8 @@ func (s *scheduler) StartAll() error {
 }
 
 func (s *scheduler) StopAll() error {
-	for _, tsk := range s.tasks {
-		err := tsk.Stop()
+	for uid, _ := range s.tasks {
+		err := s.Stop(uid)
 		if err != nil {
 			return err
 		}

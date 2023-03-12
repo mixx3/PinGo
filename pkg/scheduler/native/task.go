@@ -27,7 +27,6 @@ func NewTask(data *api.RequestPostSchema, outCh chan *api.LogPostSchema) Task {
 		outCh:  outCh,
 		ticker: time.NewTicker(time.Duration(data.RepeatTimeMs) * time.Second),
 	}
-	defer t.ticker.Stop()
 	return t
 }
 
