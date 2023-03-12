@@ -1,32 +1,53 @@
 package main
 
 import (
-	"PinGo/pkg/api"
-	pg1 "PinGo/pkg/repo/postgres"
-	"PinGo/pkg/scheduler"
-	pgs "PinGo/pkg/service/postgres"
-	"github.com/jasonlvhit/gocron"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"os"
+	api "PinGo/pkg/api"
+	"fmt"
+	"net/http"
+	"sync"
+	"time"
 )
 
-func run() error {
-	err := api.NewEnvParser(".env").Parse()
-	if err != nil {
-		return err
+type task struct {
+	Name     string
+	mtx      sync.Mutex
+	schema   api.RequestPostSchema
+	tickChan time.Ticker
+}
+
+func NewTask(name string,
+	mtx sync.Mutex,
+	schema api.RequestPostSchema,
+	tc time.Ticker) Task {
+	return &task{
+		Name:     name,
+		mtx:      mtx,
+		schema:   schema,
+		tickChan: tc,
 	}
-	db, err := gorm.Open(postgres.New(postgres.Config{DSN: os.Getenv("DB_DSN"), PreferSimpleProtocol: true}), &gorm.Config{})
-	if err != nil {
-		return err
+}
+
+type Task interface {
+	Process()
+	Stop() error
+}
+
+func (t *task) Process() {
+	tc := time.NewTicker(time.Duration(t.schema.RepeatTimeMs) * time.Second)
+	defer tc.Stop()
+	var forever chan struct{}
+	select {
+	case <-tc.C:
+		res, _ := http.Get(t.schema.Address)
+		fmt.Println(res.StatusCode)
 	}
-	repo := pg1.NewRequestRepository(db)
-	srvc := pgs.NewRequestService(repo)
-	sched := gocron.Scheduler{}
-	s := scheduler.NewScheduler(srvc, sched)
-	err = s.AddJob(&api.RequestPostSchema{Name: "fff"})
-	if err != nil {
-		return err
-	}
+	<-forever
+}
+
+func (t *task) Stop() error {
 	return nil
+}
+
+func main() {
+
 }

@@ -7,9 +7,11 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/joho/godotenv v1.5.1
+	github.com/rabbitmq/amqp091-go v1.7.0
 	github.com/swaggo/files v1.0.0
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.1
+	github.com/trustmaster/goflow v0.0.0-20210928125717-b7d4fd465ab2
 	gorm.io/driver/postgres v1.4.8
 	gorm.io/gorm v1.24.5
 )

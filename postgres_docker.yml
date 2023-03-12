@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  db:
+    container_name: 'pin_go'
+    image: 'postgres:14'
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - '5432:5432'
