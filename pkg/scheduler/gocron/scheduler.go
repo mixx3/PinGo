@@ -1,4 +1,4 @@
-package scheduler
+package gocron
 
 import (
 	"PinGo/pkg/api"
