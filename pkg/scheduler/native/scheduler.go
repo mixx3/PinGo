@@ -15,16 +15,23 @@ type Scheduler interface {
 }
 
 type scheduler struct {
-	tasks  map[uuid.UUID]Task
-	inChs  map[uuid.UUID]chan *api.RequestPostSchema
-	outChs map[uuid.UUID]chan *api.LogPostSchema
+	tasks   map[uuid.UUID]Task
+	inChs   map[uuid.UUID]chan *api.RequestPostSchema
+	outChs  map[uuid.UUID]chan *api.LogPostSchema
+	doneChs map[uuid.UUID]chan bool
 }
 
 func NewScheduler(
 	inChs *map[uuid.UUID]chan *api.RequestPostSchema,
 	outChs *map[uuid.UUID]chan *api.LogPostSchema,
+	doneChs map[uuid.UUID]chan bool,
 ) Scheduler {
-	return &scheduler{tasks: make(map[uuid.UUID]Task, 0), inChs: *inChs, outChs: *outChs}
+	return &scheduler{
+		tasks:   make(map[uuid.UUID]Task, 0),
+		inChs:   *inChs,
+		outChs:  *outChs,
+		doneChs: doneChs,
+	}
 }
 
 func (s *scheduler) TasksActive() []uuid.UUID {
@@ -43,16 +50,19 @@ func (s *scheduler) Start(id uuid.UUID) error {
 func (s *scheduler) AddTask(tsk *api.RequestPostSchema) (uuid.UUID, error) {
 	uid := uuid.New()
 	s.outChs[uid] = make(chan *api.LogPostSchema)
-	nt := NewTask(tsk, s.outChs[uid])
+	done := make(chan bool)
+	nt := NewTask(tsk, s.outChs[uid], done)
 	s.tasks[uid] = nt
+	s.doneChs[uid] = done
 	return uid, nil
 }
 
 func (s *scheduler) Stop(id uuid.UUID) error {
-	err := s.tasks[id].Stop()
+	s.doneChs[id] <- true
 	defer close(s.inChs[id])
 	defer close(s.outChs[id])
-	return err
+	defer close(s.doneChs[id])
+	return nil
 }
 
 func (s *scheduler) StartAll() error {

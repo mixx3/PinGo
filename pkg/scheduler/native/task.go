@@ -21,12 +21,12 @@ type task struct {
 	mutex  sync.Mutex
 }
 
-func NewTask(data *api.RequestPostSchema, outCh chan *api.LogPostSchema) Task {
+func NewTask(data *api.RequestPostSchema, outCh chan *api.LogPostSchema, doneCh chan bool) Task {
 	t := &task{
 		data:   data,
 		outCh:  outCh,
 		ticker: time.NewTicker(time.Duration(data.RepeatTimeMs) * time.Millisecond),
-		done:   make(chan bool, 1),
+		done:   doneCh,
 	}
 	return t
 }
@@ -35,6 +35,9 @@ func (t *task) Start() error {
 	go func() {
 		for {
 			select {
+			case <-t.done:
+				t.ticker.Stop()
+				return
 			case <-t.ticker.C:
 				go func() {
 					t.mutex.Lock()
@@ -54,10 +57,8 @@ func (t *task) Start() error {
 							ResponseTimeMs: int(t2 - t1),
 						}
 					}
+					return
 				}()
-			case <-t.done:
-				t.ticker.Stop()
-				break
 			}
 		}
 	}()
