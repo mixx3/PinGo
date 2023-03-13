@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"testing"
-	"time"
 )
 
 func TestScheduler(t *testing.T) {
@@ -35,16 +34,16 @@ func TestScheduler(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	stop := time.After(time.Second * 1)
-	for {
-		select {
-		case <-stop:
-			return
-		case data := <-ch:
-			if err != nil {
-				t.Fatal(err)
+	go func() {
+		for {
+			select {
+			case data := <-ch:
+				if err != nil {
+					t.Fatal(err)
+				}
+				fmt.Println(data.ResponseTimeMs, data.Name, data.StatusCode)
 			}
-			fmt.Println(data.ResponseTimeMs, data.Name, data.StatusCode)
 		}
-	}
+	}()
+	go s.Stop(id)
 }

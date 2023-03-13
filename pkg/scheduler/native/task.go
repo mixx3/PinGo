@@ -9,7 +9,7 @@ import (
 )
 
 type Task interface {
-	Start() error
+	Start() chan bool
 	Stop() error
 }
 
@@ -21,22 +21,22 @@ type task struct {
 	mutex  sync.Mutex
 }
 
-func NewTask(data *api.RequestPostSchema, outCh chan *api.LogPostSchema, doneCh chan bool) Task {
+func NewTask(data *api.RequestPostSchema, outCh chan *api.LogPostSchema) Task {
 	t := &task{
-		data:   data,
-		outCh:  outCh,
-		ticker: time.NewTicker(time.Duration(data.RepeatTimeMs) * time.Millisecond),
-		done:   doneCh,
+		data:  data,
+		outCh: outCh,
 	}
 	return t
 }
 
-func (t *task) Start() error {
+func (t *task) Start() chan bool {
+	t.done = make(chan bool, 1)
 	go func() {
+		t.ticker = time.NewTicker(time.Duration(t.data.RepeatTimeMs) * time.Millisecond)
+		defer t.ticker.Stop()
 		for {
 			select {
 			case <-t.done:
-				t.ticker.Stop()
 				return
 			case <-t.ticker.C:
 				go func() {
@@ -57,15 +57,15 @@ func (t *task) Start() error {
 							ResponseTimeMs: int(t2 - t1),
 						}
 					}
-					return
 				}()
 			}
 		}
 	}()
-	return nil
+	return t.done
 }
 
 func (t *task) Stop() error {
+	t.ticker.Stop()
 	<-t.done
 	return nil
 }

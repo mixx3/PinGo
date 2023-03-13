@@ -43,22 +43,21 @@ func (s *scheduler) TasksActive() []uuid.UUID {
 }
 
 func (s *scheduler) Start(id uuid.UUID) error {
-	err := s.tasks[id].Start()
-	return err
+	dc := s.tasks[id].Start()
+	s.doneChs[id] = dc
+	return nil
 }
 
 func (s *scheduler) AddTask(tsk *api.RequestPostSchema) (uuid.UUID, error) {
 	uid := uuid.New()
 	s.outChs[uid] = make(chan *api.LogPostSchema)
-	done := make(chan bool)
-	nt := NewTask(tsk, s.outChs[uid], done)
+	nt := NewTask(tsk, s.outChs[uid])
 	s.tasks[uid] = nt
-	s.doneChs[uid] = done
 	return uid, nil
 }
 
 func (s *scheduler) Stop(id uuid.UUID) error {
-	s.doneChs[id] <- true
+	defer close(s.doneChs[id])
 	defer close(s.inChs[id])
 	defer close(s.outChs[id])
 	defer close(s.doneChs[id])
@@ -66,11 +65,9 @@ func (s *scheduler) Stop(id uuid.UUID) error {
 }
 
 func (s *scheduler) StartAll() error {
-	for _, tsk := range s.tasks {
-		err := tsk.Start()
-		if err != nil {
-			return err
-		}
+	for uid, tsk := range s.tasks {
+		dc := tsk.Start()
+		s.doneChs[uid] = dc
 	}
 	return nil
 }
