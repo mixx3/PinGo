@@ -25,7 +25,8 @@ func NewTask(data *api.RequestPostSchema, outCh chan *api.LogPostSchema) Task {
 	t := &task{
 		data:   data,
 		outCh:  outCh,
-		ticker: time.NewTicker(time.Duration(data.RepeatTimeMs) * time.Second),
+		ticker: time.NewTicker(time.Duration(data.RepeatTimeMs) * time.Millisecond),
+		done:   make(chan bool, 1),
 	}
 	return t
 }
@@ -55,7 +56,8 @@ func (t *task) Start() error {
 					}
 				}()
 			case <-t.done:
-				return
+				t.ticker.Stop()
+				break
 			}
 		}
 	}()

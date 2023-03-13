@@ -10,7 +10,7 @@ type Scheduler interface {
 	Start(id uuid.UUID) error
 	StartAll() error
 	Stop(id uuid.UUID) error
-	NewTask(tsk *api.RequestPostSchema) (uuid.UUID, error)
+	AddTask(tsk *api.RequestPostSchema) (uuid.UUID, error)
 	StopAll() error
 }
 
@@ -20,8 +20,15 @@ type scheduler struct {
 	outChs map[uuid.UUID]chan *api.LogPostSchema
 }
 
+func NewScheduler(
+	inChs *map[uuid.UUID]chan *api.RequestPostSchema,
+	outChs *map[uuid.UUID]chan *api.LogPostSchema,
+) Scheduler {
+	return &scheduler{tasks: make(map[uuid.UUID]Task, 0), inChs: *inChs, outChs: *outChs}
+}
+
 func (s *scheduler) TasksActive() []uuid.UUID {
-	res := []uuid.UUID{}
+	var res []uuid.UUID
 	for k, _ := range s.tasks {
 		res = append(res, k)
 	}
@@ -33,12 +40,11 @@ func (s *scheduler) Start(id uuid.UUID) error {
 	return err
 }
 
-func (s *scheduler) NewTask(tsk *api.RequestPostSchema) (uuid.UUID, error) {
+func (s *scheduler) AddTask(tsk *api.RequestPostSchema) (uuid.UUID, error) {
 	uid := uuid.New()
 	s.outChs[uid] = make(chan *api.LogPostSchema)
 	nt := NewTask(tsk, s.outChs[uid])
 	s.tasks[uid] = nt
-	s.inChs[uid] <- tsk
 	return uid, nil
 }
 

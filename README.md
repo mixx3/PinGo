@@ -7,3 +7,8 @@ Ping service on Golang. Supposed to act like IaaS
 
     make build
 
+
+
+### UI
+Server docs available on \
+http://localhost:8080/swagger/index.html
