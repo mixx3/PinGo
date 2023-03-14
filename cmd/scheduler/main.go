@@ -1,53 +1,27 @@
 package main
 
 import (
-	api "PinGo/pkg/api"
-	"fmt"
 	"net/http"
-	"sync"
 	"time"
 )
 
-type task struct {
-	Name     string
-	mtx      sync.Mutex
-	schema   api.RequestPostSchema
-	tickChan time.Ticker
+type Task struct {
+	Address string
 }
 
-func NewTask(name string,
-	mtx sync.Mutex,
-	schema api.RequestPostSchema,
-	tc time.Ticker) Task {
-	return &task{
-		Name:     name,
-		mtx:      mtx,
-		schema:   schema,
-		tickChan: tc,
-	}
+func getRequest(t *Task, outCh chan int, resCh chan int) {
+	t1 := time.Now().Unix()
+	res, _ := http.Get(t.Address)
+	t2 := time.Now().Unix()
+	delta := int(t2 - t1)
+	outCh <- delta
+	resCh <- res.StatusCode
 }
 
-type Task interface {
-	Process()
-	Stop() error
-}
-
-func (t *task) Process() {
-	tc := time.NewTicker(time.Duration(t.schema.RepeatTimeMs) * time.Second)
-	defer tc.Stop()
-	var forever chan struct{}
-	select {
-	case <-tc.C:
-		res, _ := http.Get(t.schema.Address)
-		fmt.Println(res.StatusCode)
-	}
-	<-forever
-}
-
-func (t *task) Stop() error {
-	return nil
-}
+type Scheduler
 
 func main() {
-
+	resCh := make(chan int)
+	outCh := make(chan int)
+	go getRequest()
 }
