@@ -4,6 +4,7 @@ import "time"
 
 type LogPostSchema struct {
 	StatusCode     int    `json:"status_code"`
+	Method         string `json:"method"`
 	ResponseTimeMs int    `json:"response_time_ms"`
 	Address        string `json:"address" example:"https://github.com/mixx3"`
 	Name           string `json:"name"`
@@ -17,6 +18,7 @@ type ReceiverPostSchema struct {
 
 type RequestPostSchema struct {
 	Name                   string `json:"name"`
+	Method                 string `json:"method" default:"GET"`
 	Address                string `json:"address"`
 	StatusExpected         int    `json:"status_expected"`
 	Body                   string `json:"body"`
